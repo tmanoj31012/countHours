@@ -12,6 +12,43 @@ const processStringConventional = (arr)=>{
     console.log("c",c)
     return c
 }
+function convertTo24HourFormat(timeString) {
+    const times = timeString.split(' ');
+
+    let hours24 = [];
+    let isAfter12 = false;
+
+    for (let i = 0; i < times.length; i++) {
+        const [hours, minutes] = times[i].split(':').map(Number);
+
+        if (i > 0 && hours < hours24[i - 1].hours) {
+            // If current hours is less than the previous one,
+            // it means we have moved to the next period (AM/PM).
+            isAfter12 = true;
+        }
+
+        let adjustedHours = hours;
+
+        if (isAfter12 && hours !== 12) {
+            // It's noon
+            adjustedHours += 12;
+        } 
+        else if (isAfter12==true && hours === 12) {
+            adjustedHours = 0;
+            isAfter12 = false
+            // 00:00 AM
+        }
+        console.log(adjustedHours,minutes)
+        hours24.push({ hours: adjustedHours, minutes: minutes });
+    }
+
+    const formattedTimes = hours24.map(time => {
+        return time.hours.toString().padStart(2, '0') + ':' + time.minutes.toString().padStart(2, '0');
+    });
+    console.log(hours24)
+    return formattedTimes.join(' ');
+}
+
 
 function getTimeDifference(time1, time2) {
     const [hours1, minutes1] = time1.split(':').map(Number);
@@ -57,7 +94,8 @@ const calculate = (str) => {
     let inputFieldValue = document.getElementById("t1").value 
     // let inputFieldValue = str
     
-    let arr = processStringConventional(inputFieldValue)
+    // let arr = processStringConventional(inputFieldValue)
+    let arr = convertTo24HourFormat(inputFieldValue).split(" ")
     const totalTime = getTotalTimeDifference(arr);
     console.log(`Total time: ${totalTime.hours} hours and ${totalTime.minutes} minutes.`);
     const output = `Total time: ${totalTime.hours} hours and ${totalTime.minutes} minutes.`
